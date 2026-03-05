@@ -28,17 +28,22 @@ git remote add origin git@github.com:VOTRE_UTILISATEUR/trad3.git
 git push -u origin main
 ```
 
-## 3. Déployer en ligne (Vercel - recommandé)
+## 3. Déployer sur Vercel
 
-Next.js se déploie facilement sur [Vercel](https://vercel.com) :
+Le projet est configuré pour Vercel. Correctifs appliqués :
+
+- **Stockage** : `/tmp` utilisé sur Vercel (filesystem read-only)
+- **Fetch** : `cache: "no-store"` pour éviter les erreurs serverless
+- **Timeout** : `maxDuration: 30` pour les API routes
+
+**Déploiement** :
 
 1. Allez sur [vercel.com](https://vercel.com) et connectez-vous avec GitHub
-2. Cliquez **Add New Project**
-3. Importez votre dépôt `trad3`
-4. Vercel détecte Next.js automatiquement → **Deploy**
-5. Votre site sera en ligne à `https://trad3-xxx.vercel.app`
+2. **Add New Project** → importez le dépôt `Robot-trading` (ou `trad3`)
+3. Vercel détecte Next.js → **Deploy**
+4. Site en ligne : `https://votre-projet.vercel.app`
 
-**Note** : Sur Vercel, le stockage `data/trades.json` est éphémère. Pour l'évaluation 24/7 persistante, hébergez sur un VPS (Railway, Render, ou serveur dédié).
+**Limitation Vercel** : L'évaluation TP/SL est stockée dans `/tmp` (éphémère). Les données ne persistent pas entre les cold starts. Pour une évaluation 24/7 persistante, hébergez sur un VPS (Railway, Render, ou serveur dédié).
 
 ## 4. Alternative : GitHub Pages
 

@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const { openTrades, closedTrades } = loadTradeDataServer();
+    const { openTrades, closedTrades } = await loadTradeDataServer();
     return NextResponse.json({ openTrades, closedTrades });
   } catch (error) {
     return NextResponse.json(
@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function DELETE() {
   try {
-    clearTradeDataServer();
+    await clearTradeDataServer();
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(

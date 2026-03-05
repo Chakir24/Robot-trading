@@ -1,11 +1,23 @@
 import path from "path";
 import fs from "fs";
 import type { OpenTrade, ClosedTrade } from "./tradeTracker";
+import {
+  isSupabaseConfigured,
+  loadTradeDataSupabase,
+  closeTradeSupabase,
+  saveOpenTradesSupabase,
+  clearTradeDataSupabase,
+} from "./tradeStoreSupabase";
 
-const DATA_DIR = path.join(process.cwd(), "data");
+const MAX_STORAGE_DAYS = 7;
+const HOURS_24 = 24 * 60 * 60 * 1000;
+
+// Fichier (fallback)
+const IS_VERCEL = process.env.VERCEL === "1";
+const DATA_DIR = IS_VERCEL ? "/tmp/trad3" : path.join(process.cwd(), "data");
 const TRADES_FILE = path.join(DATA_DIR, "trades.json");
 
-export function loadTradeDataServer(): {
+function loadTradeDataFile(): {
   openTrades: Record<string, OpenTrade>;
   closedTrades: ClosedTrade[];
 } {
@@ -24,10 +36,7 @@ export function loadTradeDataServer(): {
   }
 }
 
-const MAX_STORAGE_DAYS = 7;
-const HOURS_24 = 24 * 60 * 60 * 1000;
-
-export function saveTradeDataServer(
+function saveTradeDataFile(
   openTrades: Record<string, OpenTrade>,
   closedTrades: ClosedTrade[]
 ): void {
@@ -47,7 +56,7 @@ export function saveTradeDataServer(
   }
 }
 
-export function clearTradeDataServer(): void {
+function clearTradeDataFile(): void {
   try {
     if (fs.existsSync(TRADES_FILE)) {
       fs.writeFileSync(
@@ -59,4 +68,44 @@ export function clearTradeDataServer(): void {
   } catch (err) {
     console.error("tradeStoreServer clear error:", err);
   }
+}
+
+export async function loadTradeDataServer(): Promise<{
+  openTrades: Record<string, OpenTrade>;
+  closedTrades: ClosedTrade[];
+}> {
+  if (isSupabaseConfigured()) {
+    return loadTradeDataSupabase();
+  }
+  return loadTradeDataFile();
+}
+
+export async function saveTradeDataServer(
+  openTrades: Record<string, OpenTrade>,
+  closedTrades: ClosedTrade[]
+): Promise<void> {
+  if (isSupabaseConfigured()) {
+    await saveOpenTradesSupabase(openTrades);
+    return;
+  }
+  saveTradeDataFile(openTrades, closedTrades);
+}
+
+export async function closeTradeServer(
+  id: string,
+  closePrice: number,
+  result: "TP" | "SL",
+  pnl: number
+): Promise<void> {
+  if (isSupabaseConfigured()) {
+    await closeTradeSupabase(id, closePrice, result, pnl);
+  }
+}
+
+export async function clearTradeDataServer(): Promise<void> {
+  if (isSupabaseConfigured()) {
+    await clearTradeDataSupabase();
+    return;
+  }
+  clearTradeDataFile();
 }

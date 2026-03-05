@@ -2,11 +2,12 @@ import type { OpenTrade, ClosedTrade } from "./tradeTracker";
 import {
   loadTradeDataServer,
   saveTradeDataServer,
+  closeTradeServer,
 } from "./tradeStoreServer";
 
 export type { OpenTrade, ClosedTrade } from "./tradeTracker";
 
-export function processTradeCheckServer(
+export async function processTradeCheckServer(
   timeframes: Record<
     string,
     {
@@ -17,11 +18,11 @@ export function processTradeCheckServer(
     }
   >,
   currentPrice: number
-): {
+): Promise<{
   openTrades: Record<string, OpenTrade>;
   closedTrades: ClosedTrade[];
-} {
-  const { openTrades, closedTrades } = loadTradeDataServer();
+}> {
+  const { openTrades, closedTrades } = await loadTradeDataServer();
   const updatedOpen: Record<string, OpenTrade> = { ...openTrades };
   const updatedClosed = [...closedTrades];
 
@@ -40,6 +41,9 @@ export function processTradeCheckServer(
         closeTime: Date.now(),
         pnl: hit.pnl,
       };
+      if (trade.id) {
+        await closeTradeServer(trade.id, currentPrice, hit.result, hit.pnl);
+      }
       updatedClosed.push(closed);
       delete updatedOpen[tf];
     }
@@ -60,7 +64,7 @@ export function processTradeCheckServer(
     };
   }
 
-  saveTradeDataServer(updatedOpen, updatedClosed);
+  await saveTradeDataServer(updatedOpen, updatedClosed);
   return { openTrades: updatedOpen, closedTrades: updatedClosed };
 }
 

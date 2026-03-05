@@ -27,6 +27,20 @@ npm run dev
 - **Dashboard**: http://localhost:3000
 - **API (JSON)**: http://localhost:3000/api/xauusd
 
+## Stockage Supabase
+
+Pour une évaluation TP/SL persistante (Vercel, 24/7), configurez Supabase :
+
+1. Créez un projet sur [supabase.com](https://supabase.com)
+2. Exécutez le SQL dans `supabase/migrations/001_create_trades.sql`
+3. Ajoutez `NEXT_PUBLIC_SUPABASE_URL` et `NEXT_PUBLIC_SUPABASE_ANON_KEY` dans `.env.local` (ou Vercel)
+
+Voir `SUPABASE_SETUP.md` pour le guide complet.
+
+## Déploiement Vercel
+
+Le projet est prêt pour Vercel. Connectez votre dépôt GitHub sur [vercel.com](https://vercel.com) → **Import** → déployez. Ajoutez les variables Supabase dans les paramètres du projet. Voir `DEPLOY.md`.
+
 ## API Response Structure
 
 ```json

@@ -37,10 +37,10 @@ export async function fetchOHLCV(
 
   const url = `${YAHOO_CHART_URL}?interval=${config.interval}&range=${config.range}`;
   const res = await fetch(url, {
-    next: { revalidate: 60 },
     headers: {
       "User-Agent": "Mozilla/5.0 (compatible; XAUUSD-Analyzer/1.0)",
     },
+    cache: "no-store",
   });
   const json = await res.json();
 

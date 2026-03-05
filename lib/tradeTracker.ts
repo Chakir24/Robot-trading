@@ -5,6 +5,7 @@ export interface OpenTrade {
   sl: number;
   tp: number;
   openTime: number;
+  id?: string; // Pour Supabase
 }
 
 export interface ClosedTrade {

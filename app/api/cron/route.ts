@@ -11,7 +11,7 @@ export async function GET() {
   try {
     const timeframeData = await fetchAllTimeframes();
     const analysis = buildFullAnalysis(timeframeData, 3.5);
-    const { openTrades, closedTrades } = processTradeCheckServer(
+    const { openTrades, closedTrades } = await processTradeCheckServer(
       analysis.timeframes,
       analysis.currentPrice
     );
