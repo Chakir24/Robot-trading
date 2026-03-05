@@ -1,0 +1,16 @@
+# dependencies
+node_modules
+.pnp
+.pnp.js
+
+# next
+.next
+out
+
+# data (évaluation TP/SL)
+data/
+
+# misc
+.DS_Store
+*.pem
+.env*.local
